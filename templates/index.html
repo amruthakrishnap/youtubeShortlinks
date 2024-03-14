@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Shorts Links</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://source.unsplash.com/1920x1080/?youtube');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 800px;
+            max-height: 80vh; /* Set maximum height */
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        h1 {
+            text-align: center;
+            color: #ff0000;
+            animation: slideInDown 1s ease-in-out;
+        }
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        form {
+            text-align: center;
+            margin-top: 20px;
+            animation: slideInUp 1s ease-in-out;
+        }
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        input[type="text"], input[type="number"], input[type="submit"] {
+            margin: 10px;
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            transition: all 0.3s ease-in-out;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="submit"]:focus {
+            outline: none;
+            border-color: #ff0000;
+        }
+        input[type="submit"] {
+            background-color: #ff0000;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+        }
+        input[type="submit"]:hover {
+            background-color: #cc0000;
+        }
+        #shortsLinks {
+            margin-top: 20px;
+            animation: zoomIn 1s ease-in-out;
+        }
+        @keyframes zoomIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #ff0000;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            word-break: break-all; /* Ensure long URLs break correctly */
+        }
+        a:hover {
+            color: #ff0000;
+        }
+        .youtube-logo {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('https://www.freepnglogos.com/uploads/youtube-logo-icon-transparent---32.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            margin-right: 5px;
+            animation: rotate 2s linear infinite;
+        }
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 255, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            animation: slideIn 1s ease-in-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -200%);
+            }
+            to {
+                transform: translate(-50%, -50%);
+            }
+        }
+        .video-preview-container {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 9999;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none;
+        }
+        .video-preview-container.active {
+            display: block;
+        }
+        .video-preview {
+            width: 300px;
+            height: 600px; /* Adjust height as needed */
+            overflow: hidden;
+            position: relative;
+        }
+        .video-preview iframe {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .video-controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .video-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .video-controls button:hover {
+            background-color: #cc0000;
+        }
+        .copy-text-button {
+            margin-top: 20px;
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .copy-text-button:hover {
+            background-color: #cc0000;
+        }
+        .download-csv-button {
+            margin-top: 10px;
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .download-csv-button:hover {
+            background-color: #cc0000;
+        }
+        .sand-timer {
+            position: fixed;
+            top: 50%;
+            right: 50px;
+            transform: translateY(-50%);
+            z-index: 9999;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 100px;
+            height: 100px;
+            display: none;
+        }
+        .sand-timer.active {
+            display: block;
+        }
+        .timer-text {
+            font-size: 24px;
+            text-align: center;
+            margin-top: 40px;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="youtube-logo"></span> Get YouTube Shorts Links</h1>
+        <form id="shortsForm">
+            <input type="text" name="keyword" placeholder="Enter hashtag or keyword" required>
+            <input type="number" name="limit" placeholder="Enter the limit (Enter 0 for no limit)">
+            <input type="text" name="language" placeholder="Enter language">
+            <input type="text" name="tagName" placeholder="Enter tag name">
+            <input type="text" name="tagId" placeholder="Enter tag ID">
+            <input type="submit" value="Get Links">
+        </form>
+        <div id="shortsLinks"></div>
+        <button class="copy-text-button" onclick="copyText()">Copy Text</button>
+    </div>
+    <div class="popup">Your Query is Running, Please Wait...</div>
+
+    <!-- Video preview container -->
+    <div class="video-preview-container">
+        <div class="video-preview" id="videoPreview">
+            <!-- Video preview will be dynamically added here -->
+        </div>
+        <div class="video-controls">
+            <button onclick="playPrevious()">Previous</button>
+            <button onclick="playPause()">Play/Pause</button>
+            <button onclick="playForward()">Forward</button>
+        </div>
+    </div>
+
+    <div class="sand-timer">
+        <div class="timer-text" id="timerText">Running...</div>
+    </div>
+
+    <script>
+        var videoUrls = [];
+        var currentVideoIndex = -1;
+        var startTime;
+
+        document.getElementById("shortsForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            startTime = Date.now();
+            document.querySelector('.sand-timer').classList.add('active');
+            var interval = setInterval(function() {
+                var elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById("timerText").textContent = "Running: " + elapsedSeconds + "s";
+            }, 1000);
+
+            var form = event.target;
+            var keyword = form.elements["keyword"].value;
+            var limit = form.elements["limit"].value;
+            var language = form.elements["language"].value;
+            var tagName = form.elements["tagName"].value;
+            var tagId = form.elements["tagId"].value;
+
+            fetch('/get_shorts_links?keyword=' + encodeURIComponent(keyword) + '&limit=' + encodeURIComponent(limit))
+                .then(response => response.json())
+                .then(data => {
+                    clearInterval(interval);
+                    document.querySelector('.sand-timer').classList.remove('active');
+                    var shortsLinksDiv = document.getElementById("shortsLinks");
+                    shortsLinksDiv.innerHTML = "<h2><span class='youtube-logo'></span> YouTube Shorts Links:</h2>";
+                    var table = document.createElement("table");
+                    var thead = document.createElement("thead");
+                    var tbody = document.createElement("tbody");
+
+                    var headerRow = document.createElement("tr");
+                    var headers = ["Timestamp", "Link", "Language", "Author ID", "Tag ID", "Tag Name"];
+                    headers.forEach(function(headerText) {
+                        var th = document.createElement("th");
+                        th.textContent = headerText;
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+                    table.appendChild(thead);
+
+                    data.shorts_links.forEach(function(link) {
+                        var row = document.createElement("tr");
+                        var today = new Date();
+                        var timestamp = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+
+                        var timestampCell = document.createElement("td");
+                        timestampCell.textContent = timestamp;
+                        row.appendChild(timestampCell);
+
+                        var linkCell = document.createElement("td");
+                        var linkText = document.createElement("a");
+                        linkText.href = link;
+                        linkText.textContent = link;
+                        linkText.onclick = function() {
+                            playVideo(link);
+                            return false;
+                        };
+                        linkCell.appendChild(linkText);
+                        row.appendChild(linkCell);
+
+                        var languageCell = document.createElement("td");
+                        languageCell.textContent = language;
+                        row.appendChild(languageCell);
+
+                        var authorIDCell = document.createElement("td");
+                        var authorID = getRandomAuthorID();
+                        authorIDCell.textContent = authorID;
+                        row.appendChild(authorIDCell);
+
+                        var tagIdCell = document.createElement("td");
+                        tagIdCell.textContent = tagId;
+                        row.appendChild(tagIdCell);
+
+                        var tagNameCell = document.createElement("td");
+                        tagNameCell.textContent = tagName;
+                        row.appendChild(tagNameCell);
+
+                        tbody.appendChild(row);
+                        videoUrls.push(link);
+                    });
+
+                    table.appendChild(tbody);
+                    shortsLinksDiv.appendChild(table);
+
+                    // Add download CSV button
+                    var downloadButton = document.createElement("button");
+                    downloadButton.textContent = "Download CSV";
+                    downloadButton.className = "download-csv-button";
+                    downloadButton.addEventListener("click", function() {
+                        downloadCSV(data.shorts_links, language, tagName, tagId);
+                    });
+                    shortsLinksDiv.appendChild(downloadButton);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    clearInterval(interval);
+                    document.querySelector('.sand-timer').classList.remove('active');
+                });
+        });
+
+        function copyText() {
+            var textToCopy = document.getElementById("shortsLinks").innerText;
+            navigator.clipboard.writeText(textToCopy).then(function() {
+                console.log('Text copied successfully');
+                alert('Text copied successfully');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        function playVideo(url) {
+            var videoPreviewContainer = document.querySelector('.video-preview-container');
+            var videoPreview = document.getElementById('videoPreview');
+            var videoId = url.split('/').pop();
+            videoPreview.innerHTML = '<iframe width="300" height="600" src="https://www.youtube.com/embed/' + videoId + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            videoPreviewContainer.classList.add('active');
+        }
+
+        function playPause() {
+            var videoFrame = document.querySelector('.video-preview iframe');
+            if (videoFrame) {
+                if (videoFrame.paused) {
+                    videoFrame.play();
+                } else {
+                    videoFrame.pause();
+                }
+            }
+        }
+
+        function playPrevious() {
+            if (currentVideoIndex > 0) {
+                currentVideoIndex--;
+                playVideo(videoUrls[currentVideoIndex]);
+            }
+        }
+
+        function playForward() {
+            if (currentVideoIndex < videoUrls.length - 1) {
+                currentVideoIndex++;
+                playVideo(videoUrls[currentVideoIndex]);
+            }
+        }
+
+        function convertToCSV(array, language, tagName, tagId) {
+            var csv = "Timestamp,Link,Language,Author ID,Tag ID,Tag Name\n";
+            array.forEach(function(link) {
+                var today = new Date();
+                var timestamp = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+                var authorID = getRandomAuthorID();
+                var line = timestamp + ',' + link + ',' + language + ',' + authorID + ',' + tagId + ',' + tagName;
+                csv += line + '\n';
+            });
+            return csv;
+        }
+
+        function downloadCSV(links, language, tagName, tagId) {
+            var csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += convertToCSV(links, language, tagName, tagId);
+
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "shorts_links.csv");
+            document.body.appendChild(link); // Required for Firefox
+            link.click();
+        }
+
+        function getRandomAuthorID() {
+            var authorIDs = ["1398857314", "1237049199", "2181198612", "2535144869", "1873614857", "2341029272", "594597154", "510559338"];
+            var randomIndex = Math.floor(Math.random() * authorIDs.length);
+            return authorIDs[randomIndex];
+        }
+    </script>
+</body>
+</html>
