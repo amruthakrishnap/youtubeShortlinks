@@ -272,8 +272,6 @@
         <form id="shortsForm">
             <input type="text" name="keyword" placeholder="Enter hashtag or keyword" required>
             <input type="number" name="limit" placeholder="Enter the limit (Enter 0 for no limit)">
-            <input type="text" name="language" placeholder="Enter language">
-            <input type="text" name="tagName" placeholder="Enter tag name">
             <input type="text" name="tagId" placeholder="Enter tag ID">
             <input type="submit" value="Get Links">
         </form>
@@ -315,8 +313,6 @@
             var form = event.target;
             var keyword = form.elements["keyword"].value;
             var limit = form.elements["limit"].value;
-            var language = form.elements["language"].value;
-            var tagName = form.elements["tagName"].value;
             var tagId = form.elements["tagId"].value;
 
             fetch('/get_shorts_links?keyword=' + encodeURIComponent(keyword) + '&limit=' + encodeURIComponent(limit))
@@ -331,7 +327,7 @@
                     var tbody = document.createElement("tbody");
 
                     var headerRow = document.createElement("tr");
-                    var headers = ["Timestamp", "Link", "Language", "Author ID", "Tag ID", "Tag Name"];
+                    var headers = ["source", "date", "status", "botUserId", "tagId", "Language", "link"]; // Modified headers
                     headers.forEach(function(headerText) {
                         var th = document.createElement("th");
                         th.textContent = headerText;
@@ -343,11 +339,34 @@
                     data.shorts_links.forEach(function(link) {
                         var row = document.createElement("tr");
                         var today = new Date();
-                        var timestamp = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+                        var month = (today.getMonth() + 1).toString().padStart(2, '0'); // Adding leading zero
+                        var day = today.getDate().toString().padStart(2, '0'); // Adding leading zero
+                        var timestamp = month + '/' + day + '/' + today.getFullYear(); // Modified timestamp format
 
-                        var timestampCell = document.createElement("td");
-                        timestampCell.textContent = timestamp;
-                        row.appendChild(timestampCell);
+                        var sourceCell = document.createElement("td"); // Added source cell
+                        sourceCell.textContent = "Youtube"; // Constant value
+                        row.appendChild(sourceCell);
+
+                        var dateCell = document.createElement("td"); // Added date cell
+                        dateCell.textContent = timestamp; // Modified timestamp value
+                        row.appendChild(dateCell);
+
+                        var statusCell = document.createElement("td"); // Added status cell
+                        statusCell.textContent = "NEW"; // Constant value
+                        row.appendChild(statusCell);
+
+                        var botUserIdCell = document.createElement("td"); // Modified AuthorID to botUserId
+                        var botUserId = getRandomAuthorID();
+                        botUserIdCell.textContent = botUserId;
+                        row.appendChild(botUserIdCell);
+
+                        var tagIdCell = document.createElement("td");
+                        tagIdCell.textContent = tagId;
+                        row.appendChild(tagIdCell);
+
+                        var languageCell = document.createElement("td"); // Constant value for Language
+                        languageCell.textContent = "Kannada";
+                        row.appendChild(languageCell);
 
                         var linkCell = document.createElement("td");
                         var linkText = document.createElement("a");
@@ -359,23 +378,6 @@
                         };
                         linkCell.appendChild(linkText);
                         row.appendChild(linkCell);
-
-                        var languageCell = document.createElement("td");
-                        languageCell.textContent = language;
-                        row.appendChild(languageCell);
-
-                        var authorIDCell = document.createElement("td");
-                        var authorID = getRandomAuthorID();
-                        authorIDCell.textContent = authorID;
-                        row.appendChild(authorIDCell);
-
-                        var tagIdCell = document.createElement("td");
-                        tagIdCell.textContent = tagId;
-                        row.appendChild(tagIdCell);
-
-                        var tagNameCell = document.createElement("td");
-                        tagNameCell.textContent = tagName;
-                        row.appendChild(tagNameCell);
 
                         tbody.appendChild(row);
                         videoUrls.push(link);
@@ -389,7 +391,7 @@
                     downloadButton.textContent = "Download CSV";
                     downloadButton.className = "download-csv-button";
                     downloadButton.addEventListener("click", function() {
-                        downloadCSV(data.shorts_links, language, tagName, tagId);
+                        downloadCSV(data.shorts_links, "Kannada", tagId);
                     });
                     shortsLinksDiv.appendChild(downloadButton);
                 })
@@ -443,21 +445,23 @@
             }
         }
 
-        function convertToCSV(array, language, tagName, tagId) {
-            var csv = "Timestamp,Link,Language,Author ID,Tag ID,Tag Name\n";
+        function convertToCSV(array, language, tagId) {
+            var csv = "source,date,status,botUserId,tagId,Language,link\n"; // Modified CSV header
             array.forEach(function(link) {
                 var today = new Date();
-                var timestamp = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-                var authorID = getRandomAuthorID();
-                var line = timestamp + ',' + link + ',' + language + ',' + authorID + ',' + tagId + ',' + tagName;
+                var month = (today.getMonth() + 1).toString().padStart(2, '0');
+                var day = today.getDate().toString().padStart(2, '0');
+                var timestamp = month + '/' + day + '/' + today.getFullYear();
+                var botUserId = getRandomAuthorID();
+                var line = "Youtube," + timestamp + ",NEW," + botUserId + "," + tagId + ",Kannada," + link; // Modified CSV line
                 csv += line + '\n';
             });
             return csv;
         }
 
-        function downloadCSV(links, language, tagName, tagId) {
+        function downloadCSV(links, language, tagId) {
             var csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += convertToCSV(links, language, tagName, tagId);
+            csvContent += convertToCSV(links, language, tagId);
 
             var encodedUri = encodeURI(csvContent);
             var link = document.createElement("a");
@@ -468,10 +472,11 @@
         }
 
         function getRandomAuthorID() {
-            var authorIDs = ["1398857314", "1237049199", "2181198612", "2535144869", "1873614857", "2341029272", "594597154", "510559338"];
+            var authorIDs = ["2166078293","711891205","1375165134","1209038811","2159448328","2468697933","2068141706","2410674919","1280763948","2320135656","1026433986","1106225834","1765663446","678156997","733934735","2625539203","1000454470","1759553279","1375023754","1787801771","812923376","2722152421","2150145594","905720761","2315486539","717860904","833559980","1959219586","1834327675","1133671267","2614831479","971371687","1362746469","1247796087","1014103089","1489149742","880070524","2195160564","2639974908","1905726952","2565148436","782346051","1550186579","2287137598","2352819993","1897280373","1978617872","1224095776","2539914023"];
             var randomIndex = Math.floor(Math.random() * authorIDs.length);
             return authorIDs[randomIndex];
         }
     </script>
 </body>
 </html>
+
